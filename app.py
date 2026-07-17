@@ -1,3 +1,18 @@
+from pathlib import Path
+import subprocess
+import sys
+
+PROJECT_ROOT = Path(__file__).resolve().parent
+CHROMA_DIR = PROJECT_ROOT / "chroma_db"
+
+if not CHROMA_DIR.exists():
+    subprocess.run(
+        [sys.executable, str(PROJECT_ROOT / "scripts" / "ingest_documents.py")],
+        cwd=PROJECT_ROOT,
+        check=True,
+    )
+
+
 from __future__ import annotations
 import json
 import time
