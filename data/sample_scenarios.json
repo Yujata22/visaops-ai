@@ -1,0 +1,16 @@
+[
+  {
+    "scenario_id": "H1B-001",
+    "title": "Employment ended while in H-1B status",
+    "visa_type": "H-1B",
+    "category": "employment_ended",
+    "fictional": true
+  },
+  {
+    "scenario_id": "F1-001",
+    "title": "F-1 student approaching program completion",
+    "visa_type": "F-1",
+    "category": "status_expiration",
+    "fictional": true
+  }
+]

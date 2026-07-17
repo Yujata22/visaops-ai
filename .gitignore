@@ -1,0 +1,24 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+.DS_Store
+.streamlit/secrets.toml
+chroma_db/
+
+# Secrets
+.streamlit/secrets.toml
+.env
+*.pem
+*.key
+service-account*.json
+
+# Local test files and secrets
+test_gemini.py
+.streamlit/secrets.toml
+.env
+
+# Local test files and secrets
+test_gemini.py
+.streamlit/secrets.toml
+.env

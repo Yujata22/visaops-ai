@@ -1,0 +1,42 @@
+[
+  {
+    "id": "h1b_001",
+    "category": "H-1B",
+    "question": "What happens after H-1B employment ends?"
+  },
+  {
+    "id": "h1b_002",
+    "category": "H-1B",
+    "question": "Can a new employer file an H-1B transfer during the grace period?"
+  },
+  {
+    "id": "h1b_003",
+    "category": "H-1B",
+    "question": "Is the H-1B grace period automatically granted?"
+  },
+  {
+    "id": "h1b_004",
+    "category": "H-1B",
+    "question": "Can someone begin working after an H-1B transfer petition is filed?"
+  },
+  {
+    "id": "cos_001",
+    "category": "Change of Status",
+    "question": "What is the difference between an I-539 rejection and denial?"
+  },
+  {
+    "id": "cos_002",
+    "category": "Change of Status",
+    "question": "What should someone verify after filing a change-of-status application?"
+  },
+  {
+    "id": "f1_001",
+    "category": "F-1",
+    "question": "When can an F-1 student begin CPT employment?"
+  },
+  {
+    "id": "f1_002",
+    "category": "F-1",
+    "question": "Can a student work while an H-1B to F-1 change of status is pending?"
+  }
+]
