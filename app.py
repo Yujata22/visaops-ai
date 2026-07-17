@@ -1,12 +1,74 @@
 from __future__ import annotations
+
 import json
+import subprocess
+import sys
 import time
 from datetime import date, timedelta
+from pathlib import Path
 from typing import Any
 
 import pandas as pd
 import streamlit as st
 
+
+# -------------------------------------------------------------------
+# BUILD KNOWLEDGE BASE BEFORE IMPORTING VISAOPS SERVICES
+# -------------------------------------------------------------------
+
+PROJECT_ROOT = Path(__file__).resolve().parent
+CHROMA_DIR = PROJECT_ROOT / "chroma_db"
+CHROMA_DATABASE = CHROMA_DIR / "chroma.sqlite3"
+INGEST_SCRIPT = PROJECT_ROOT / "scripts" / "ingest_documents.py"
+
+
+def ensure_knowledge_base() -> None:
+    """Create the persisted Chroma database when it is missing."""
+    if CHROMA_DATABASE.exists():
+        return
+
+    if not INGEST_SCRIPT.exists():
+        raise RuntimeError(
+            f"Knowledge-base ingestion script was not found: {INGEST_SCRIPT}"
+        )
+
+    CHROMA_DIR.mkdir(parents=True, exist_ok=True)
+
+    result = subprocess.run(
+        [sys.executable, str(INGEST_SCRIPT)],
+        cwd=str(PROJECT_ROOT),
+        capture_output=True,
+        text=True,
+        timeout=900,
+        check=False,
+    )
+
+    if result.returncode != 0:
+        raise RuntimeError(
+            "Unable to build the Chroma knowledge base.\n\n"
+            f"STDOUT:\n{result.stdout}\n\n"
+            f"STDERR:\n{result.stderr}"
+        )
+
+    if not CHROMA_DATABASE.exists():
+        raise RuntimeError(
+            "The ingestion script completed, but chroma_db/chroma.sqlite3 "
+            "was not created. Confirm that scripts/ingest_documents.py "
+            "persists ChromaDB to PROJECT_ROOT / 'chroma_db'.\n\n"
+            f"STDOUT:\n{result.stdout}\n\n"
+            f"STDERR:\n{result.stderr}"
+        )
+
+
+knowledge_base_startup_error = ""
+
+try:
+    ensure_knowledge_base()
+except Exception as exc:
+    knowledge_base_startup_error = str(exc)
+
+
+# Import application services only after the database build attempt.
 from services.answer_generator import generate_educational_answer
 from services.evaluation_engine import evaluate_answer
 from services.knowledge_retriever import (
@@ -18,12 +80,13 @@ from services.model_providers import (
     generate_local_answer,
     generate_rule_based_answer,
 )
-
 from services.benchmark_runner import (
     load_benchmark_questions,
     run_benchmark,
     summarize_benchmark,
 )
+
+
 # -------------------------------------------------------------------
 # PAGE CONFIGURATION
 # -------------------------------------------------------------------
@@ -334,14 +397,19 @@ def build_basic_timeline(
 # LOAD RETRIEVER
 # -------------------------------------------------------------------
 
-try:
-    retriever = load_retriever()
-    retriever_ready = True
-    retriever_error = ""
-except Exception as exc:
+if knowledge_base_startup_error:
     retriever = None
     retriever_ready = False
-    retriever_error = str(exc)
+    retriever_error = knowledge_base_startup_error
+else:
+    try:
+        retriever = load_retriever()
+        retriever_ready = True
+        retriever_error = ""
+    except Exception as exc:
+        retriever = None
+        retriever_ready = False
+        retriever_error = str(exc)
 
 
 # -------------------------------------------------------------------
